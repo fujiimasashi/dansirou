@@ -13,6 +13,10 @@ var productsList = [
   '団四郎の塩糀',
   '手づくり糀',
   'みそ漬け',
+  '鉄火味噌',
+  'レモン味噌ディップ',
+  '味噌ふりかけ',
+  '二十年味噌',
 ];
 
 var productsList2 = [
@@ -25,22 +29,26 @@ var productsList2 = [
   '塩糀',
   '手作り糀',
   '味噌漬け',
+  '鉄火味噌',
+  'レモン味噌ディップ',
+  '味噌漬ふりかけ',
+  '二十年味噌',
 ]; 
   
 function getMail() {
   var label = '店鋪管理 ';
-  var targetSheet = '2018/9迄';
+  var targetSheet = '2018/10~';
   var checkSheet = '2018確認用';
   var start = 0;
   var max = 500;
   var threads = GmailApp.search('label:' + label + ' is:unread', start, max);
   var messages = GmailApp.getMessagesForThreads(threads);
   var setProductsData = [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   ];
   var printData = [];
   var checkData = [['', '', '無し', '無し', '無し', '無し', '無し' ]];
@@ -52,7 +60,17 @@ function getMail() {
     var getSubject = messages[i][last].getSubject();
     getDate = messages[i][last].getDate();
     var plainMessage = messages[i][last].getPlainBody();
-    var message = alpha(plainMessage).replace(/金印味噌　/g, "金印味噌").replace(/銀印味噌　/g, "銀印味噌").replace(/三年味噌　/g, "三年味噌").replace(/,/g, "").replace(/㎏/g, "k").replace(/g/g, "").replace(/個/g, "").replace(/円/g, "").split(/\s+/);
+    var message = alpha(plainMessage)
+    .replace(/金印味噌　/g, "金印味噌")
+    .replace(/銀印味噌　/g, "銀印味噌")
+    .replace(/三年味噌　/g, "三年味噌")
+    .replace(/,/g, "")
+    .replace(/㎏/g, "k")
+    .replace(/g/g, "")
+    .replace(/個/g, "")
+    .replace(/円/g, "")
+    .split(/\s+/);
+    
     if (getFrom.indexOf('tonton@megasystems.jp') > -1) {
       if (getSubject.indexOf('松崎') > -1) {
         setProductsData[0] = extractionData(message, 1);
@@ -86,22 +104,24 @@ function getMail() {
   for(var j = 0; j < productsList.length; j++){
     printData[j] = [
       '', '', productsList[j],
-      setStockNum(targetRow, 'D', j), '', '', '', salesAverage(targetRow, 'I', j, 7), setProductsData[0][j],
-      setStockNum(targetRow, 'J', j), '', '', '', salesAverage(targetRow, 'O', j, 7), setProductsData[1][j],
-      setStockNum(targetRow, 'P', j), '', '', '', salesAverage(targetRow, 'U', j, 7), setProductsData[2][j],
-      setStockNum(targetRow, 'V', j), '', '', '', salesAverage(targetRow, 'AA', j, 7), setProductsData[3][j],
-      setStockNum(targetRow, 'AB', j), '', '', '', salesAverage(targetRow, 'AG', j, 7), setProductsData[4][j],
+      setStockNum(targetRow, 'D', j), '', '', salesAverage(targetRow, 'I', j, 30), salesAverage(targetRow, 'I', j, 7), setProductsData[0][j],
+      setStockNum(targetRow, 'J', j), '', '', salesAverage(targetRow, 'O', j, 30), salesAverage(targetRow, 'O', j, 7), setProductsData[1][j],
+      setStockNum(targetRow, 'P', j), '', '', salesAverage(targetRow, 'U', j, 30), salesAverage(targetRow, 'U', j, 7), setProductsData[2][j],
+      setStockNum(targetRow, 'V', j), '', '', salesAverage(targetRow, 'AA', j, 30), salesAverage(targetRow, 'AA', j, 7), setProductsData[3][j],
+      setStockNum(targetRow, 'AB', j), '', '', salesAverage(targetRow, 'AG', j, 30), salesAverage(targetRow, 'AG', j, 7), setProductsData[4][j],
+      productsList[j]
     ];
   }
 
   // 2018
   printData[0][0] = getDate;
   printData[0][1] = getDay(getDate);
+  
   for(var i = 0; i < productsList.length; i++){
-    SpreadsheetApp.getActive().getSheetByName(targetSheet).getRange(targetRow, 1, j, 33).setValues(printData);
+    SpreadsheetApp.getActive().getSheetByName(targetSheet).getRange(targetRow, 1, j, 34).setValues(printData);
   }
   // 罫線を挿入
-  var borderRange = 'A' + String(targetRow - 1 + productsList.length) + ':' + 'AG' + String(targetRow -1 + productsList.length);
+  var borderRange = 'A' + String(targetRow - 1 + productsList.length) + ':' + 'AH' + String(targetRow -1 + productsList.length);
   SpreadsheetApp.getActive().getSheetByName(targetSheet).getRange(borderRange).setBorder(null, null, true, null, null, null, 'black', SpreadsheetApp.BorderStyle.DOUBLE);
 
   // 2018確認用
@@ -112,7 +132,7 @@ function getMail() {
   
 // 2018の最終行のセルを開く
 function onOpen() {
-  var targetSheet = '2018/9迄';
+  var targetSheet = '2018/10~';
   var lastRow = SpreadsheetApp.getActive().getSheetByName(targetSheet).getLastRow();
   SpreadsheetApp.getActive().getSheetByName(targetSheet).setActiveSelection("A" + lastRow); 
 }
@@ -128,11 +148,21 @@ function onOpenCheck() {
 function salesAverage(targetRow, colName, num, days) {
   var days = String(days); 
   var result = '';
+  var flag = true;
   for(var i = 0; i < days; i++){
     var plus = i !== 0 ? '+' : '';
-    result += plus + (colName + String(targetRow + num - i*productsList.length));
+    var row = targetRow + num - i*productsList.length
+    if (row >= 0 && flag) {
+      result += plus + (colName + String(row));
+    } else {
+      flag = false
+    }
   }
-  return '=' + result;
+  if (flag) {
+    return '=' + result;
+  } else {
+    return ''
+  }
 };
         
 // 曜日抽出
@@ -154,7 +184,7 @@ function setStockNum(targetRow, colName, num) {
 
 // 列抽出        
 function getCol(colName, num) {
-  var alphabets = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD', 'AE', 'AF', 'AG'];
+  var alphabets = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD', 'AE', 'AF', 'AG', 'AH'];
   var colNameNum = alphabets.indexOf(colName);
   return alphabets[colNameNum + num];
 };
