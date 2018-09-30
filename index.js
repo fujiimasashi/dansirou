@@ -29,8 +29,8 @@ var productsList2 = [
   
 function getMail() {
   var label = '店鋪管理 ';
-  var targetSheet = 'test';
-  var checkSheet = '2018確認用test';
+  var targetSheet = '2018/9迄';
+  var checkSheet = '2018確認用';
   var start = 0;
   var max = 500;
   var threads = GmailApp.search('label:' + label + ' is:unread', start, max);
@@ -52,17 +52,7 @@ function getMail() {
     var getSubject = messages[i][last].getSubject();
     getDate = messages[i][last].getDate();
     var plainMessage = messages[i][last].getPlainBody();
-    var message = alpha(plainMessage)
-    .replace(/金印味噌　/g, "金印味噌")
-    .replace(/銀印味噌　/g, "銀印味噌")
-    .replace(/三年味噌　/g, "三年味噌")
-    .replace(/,/g, "")
-    .replace(/㎏/g, "k")
-    .replace(/g/g, "")
-    .replace(/個/g, "")
-    .replace(/円/g, "")
-    .split(/\s+/);
-    
+    var message = alpha(plainMessage).replace(/金印味噌　/g, "金印味噌").replace(/銀印味噌　/g, "銀印味噌").replace(/三年味噌　/g, "三年味噌").replace(/,/g, "").replace(/㎏/g, "k").replace(/g/g, "").replace(/個/g, "").replace(/円/g, "").split(/\s+/);
     if (getFrom.indexOf('tonton@megasystems.jp') > -1) {
       if (getSubject.indexOf('松崎') > -1) {
         setProductsData[0] = extractionData(message, 1);
@@ -122,7 +112,7 @@ function getMail() {
   
 // 2018の最終行のセルを開く
 function onOpen() {
-  var targetSheet = '2018';
+  var targetSheet = '2018/9迄';
   var lastRow = SpreadsheetApp.getActive().getSheetByName(targetSheet).getLastRow();
   SpreadsheetApp.getActive().getSheetByName(targetSheet).setActiveSelection("A" + lastRow); 
 }
